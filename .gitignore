@@ -13,3 +13,4 @@ pyvenv.cfg
 /bin
 .vscode
 .venv
+.idea
