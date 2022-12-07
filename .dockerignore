@@ -1,0 +1,7 @@
+.venv
+.idea
+Dockerfile
+.dockerignore
+README.md
+fabfile.py
+ansible
