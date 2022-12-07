@@ -1,0 +1,55 @@
+---
+- hosts: all
+  vars_files:
+    - ../vars.yml
+
+  tasks:
+    - name: git clone
+      ansible.builtin.git:
+        repo: "{{ github_url }}"
+        dest: "{{ project_path }}"
+        force: true
+
+    - name: create virtualenv
+      ansible.builtin.pip:
+        requirements: "{{ requirements_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+    - name: manage.py permissions
+      ansible.builtin.file:
+        path: "{{ manage_path }}"
+        mode: 0777
+
+    - name: make migrations
+      community.general.django_manage:
+        command: makemigrations
+        project_path: "{{ project_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+    - name: migrate
+      community.general.django_manage:
+        command: migrate
+        project_path: "{{ project_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+    - name: loaddata
+      community.general.django_manage:
+        command: loaddata
+        project_path: "{{ project_path }}"
+        fixtures: "{{ db_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+    - name: Create an initial superuser
+      community.general.django_manage:
+        command: "createsuperuser --noinput --username={{ DJANGO_SUPERUSER_USERNAME }} --email={{ DJANGO_SUPERUSER_EMAIL }}"
+        project_path: "{{ project_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+    - name: runserver
+      community.general.django_manage:
+        command: runserver
+        project_path: "{{ project_path }}"
+        virtualenv: "{{ virtualenv_path }}"
+
+
+
